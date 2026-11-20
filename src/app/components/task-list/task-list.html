@@ -1,0 +1,86 @@
+
+<div class="task-list">
+  <h1>Task Management System</h1>
+
+  <div class="filters">
+    <input
+      type="text"
+      placeholder="Search by title"
+      [ngModel]="search()"
+      (ngModelChange)="search.set($event)"
+    />
+
+    <select
+      [ngModel]="statusFilter()"
+      (ngModelChange)="statusFilter.set($event)"
+    >
+      <option value="all">All Statuses</option>
+      <option value="pending">Pending</option>
+      <option value="completed">Completed</option>
+    </select>
+
+    <input
+  type="text"
+  placeholder="Filter by User ID"
+  [ngModel]="userFilter()"
+  (ngModelChange)="userFilter.set($event)"
+/>
+  </div>
+
+  @if (loading()) {
+    <p>Loading...</p>
+  }
+
+  @if (error()) {
+    <p class="error">{{ error() }}</p>
+  }
+
+  @for (task of filteredTasks(); track task.id) {
+    <div class="task-card">
+      @if (editingId() === task.id) {
+        <div class="edit-form">
+          <input
+            type="text"
+            [ngModel]="editTitle()"
+            (ngModelChange)="editTitle.set($event)"
+          />
+
+          <select
+            [ngModel]="editStatus()"
+            (ngModelChange)="editStatus.set($event)"
+          >
+            <option value="pending">Pending</option>
+            <option value="completed">Completed</option>
+          </select>
+
+          <button class="save-btn" (click)="saveEdit(task.id, task.user_id)">
+            Save
+          </button>
+
+          <button class="cancel-btn" (click)="cancelEdit()">
+            Cancel
+          </button>
+        </div>
+      } @else {
+        <h3>{{ task.title }}</h3>
+        <p>Status: {{ task.status }}</p>
+        <p>User ID: {{ task.user_id }}</p>
+
+        <div class="actions">
+          <button class="edit-btn"
+            (click)="startEdit(task.id, task.title, task.status)">
+            Edit
+          </button>
+
+          <button class="delete-btn" (click)="deleteTask(task.id)">
+            Delete
+          </button>
+        </div>
+      }
+    </div>
+  } @empty {
+    @if (!loading() && !error()) {
+      <p>No tasks found</p>
+    }
+  }
+</div>
